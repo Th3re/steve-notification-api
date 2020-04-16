@@ -34,7 +34,7 @@ def callback(ch, method, properties, body):
 
 def main():
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='localhost'))
+        pika.ConnectionParameters(host='rabbit'))
     channel = connection.channel()
 
     channel.queue_declare(queue='travel', durable=True)
