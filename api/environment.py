@@ -10,7 +10,7 @@ class EnvClass:
 class Google(EnvClass):
     def __init__(self):
         super()
-        self.apikey = self.get('apikey')
+        self.apikey_fcm = self.get('apikey_fcm')
 
 
 class Environment(EnvClass):

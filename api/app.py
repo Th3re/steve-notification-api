@@ -9,7 +9,7 @@ from api.notification.google import GoogleNotificationService
 LOG = logging.getLogger(__name__)
 
 env = read_environment()
-notification_service = GoogleNotificationService(env.google.apikey)
+notification_service = GoogleNotificationService(env.google.apikey_fcm)
 
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost'))
