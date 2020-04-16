@@ -11,13 +11,6 @@ LOG = logging.getLogger(__name__)
 env = read_environment()
 notification_service = GoogleNotificationService(env.google.apikey_fcm)
 
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
-
-channel.queue_declare(queue='travel', durable=True)
-print(' [*] Waiting for messages. To exit press CTRL+C')
-
 
 def callback(ch, method, properties, body):
     try:
@@ -39,7 +32,13 @@ def callback(ch, method, properties, body):
         LOG.error(f'error: {e}, trace: {traceback.format_exc()}')
 
 
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue='travel', on_message_callback=callback)
+def main():
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
 
-channel.start_consuming()
+    channel.queue_declare(queue='travel', durable=True)
+    LOG.info('[*] Waiting for messages')
+    channel.basic_qos(prefetch_count=1)
+    channel.basic_consume(queue='travel', on_message_callback=callback)
+    channel.start_consuming()
