@@ -2,7 +2,7 @@ import pika
 import json
 import logging
 
-from api.environment import read_environment
+from api.environment import Environment
 from api.notification.service import Message, Notification
 from api.notification.google import GoogleNotificationService
 
@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 
 LOG = logging.getLogger(__name__)
 
-env = read_environment()
+env = Environment.read()
 notification_service = GoogleNotificationService(env.google.apikey_fcm)
 
 
