@@ -28,19 +28,18 @@ def callback(ch, method, properties, body):
         notification = Notification(title=title, subtitle=subtitle, body=body)
         message = Message(notification, body)
         notification_service.send(user_id, message)
-        ch.basic_ack(delivery_tag=method.delivery_tag)
     except Exception as e:
         import traceback
         LOG.error(f'error: {e}, trace: {traceback.format_exc()}')
 
 
 def main():
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='rabbit'))
-    channel = connection.channel()
-
-    channel.queue_declare(queue='travel', durable=True)
-    LOG.info('[*] Waiting for messages')
-    channel.basic_qos(prefetch_count=1)
-    channel.basic_consume(queue='travel', on_message_callback=callback)
-    channel.start_consuming()
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    connection_channel = connection.channel()
+    connection_channel.exchange_declare(exchange='travel', exchange_type='topic')
+    result = connection_channel.queue_declare('', exclusive=True)
+    queue_name = result.method.queue
+    connection_channel.queue_bind(exchange='travel', queue=queue_name, routing_key='')
+    LOG.info('[*] Waiting for messages. To exit press CTRL+C')
+    connection_channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    connection_channel.start_consuming()
